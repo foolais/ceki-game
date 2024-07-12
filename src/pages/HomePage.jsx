@@ -2,6 +2,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import MainLayout from "../components/MainLayout";
 import cardGame from "../assets/cardGame.lottie";
 import { Heading, Box, Button, Stack } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
 const HomePage = () => {
   return (
@@ -29,9 +30,11 @@ const HomePage = () => {
         />
       </Box>
       <Stack direction="column" align="center" spacing={4} mt={6}>
-        <Button size="md" colorScheme="teal" w="250px">
-          Create New Game
-        </Button>
+        <Link to="/create">
+          <Button size="md" colorScheme="teal" w="250px">
+            Create New Game
+          </Button>
+        </Link>
         <Button size="md" colorScheme="teal" variant="outline" w="250px">
           Load Game
         </Button>
