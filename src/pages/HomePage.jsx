@@ -11,7 +11,7 @@ const HomePage = () => {
         CEKI Game
       </Heading>
       <Box
-        h={{ base: "250px", md: "350px" }}
+        h={{ base: "250px", sm: "350px" }}
         style={{
           maxWidth: "100%",
           overflow: "hidden",

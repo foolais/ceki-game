@@ -17,10 +17,11 @@ import {
 } from "@chakra-ui/icons";
 import { Form, Formik, FieldArray } from "formik";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 const FormCreatePlayer = ({ onNextPage }) => {
   const navigate = useNavigate();
-  const initialValues = {
+  const [initialValues, setInitialValues] = useState({
     players: [
       {
         name: "",
@@ -29,7 +30,14 @@ const FormCreatePlayer = ({ onNextPage }) => {
         id: 1,
       },
     ],
-  };
+  });
+
+  useEffect(() => {
+    const savedPlayers = JSON.parse(localStorage.getItem("players"));
+    if (savedPlayers && savedPlayers.length > 0) {
+      setInitialValues({ players: savedPlayers });
+    }
+  }, []);
 
   const disabledAddPlayer = (values) => {
     return values.players[values.players.length - 1].name.trim() === "";
@@ -45,7 +53,11 @@ const FormCreatePlayer = ({ onNextPage }) => {
   };
 
   return (
-    <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+    <Formik
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      enableReinitialize
+    >
       {({ values, handleChange }) => (
         <Form>
           <FieldArray name="players">
