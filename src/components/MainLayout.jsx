@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 
 const MainLayout = ({ children, isWithNavbar = true }) => {
   return (
-    <Box w="100vw" h={{ base: "90vh", sm: "100vh" }} bg="#1e1e1e">
+    <Box w="100vw" h={{ base: "95vh", sm: "100vh" }} bg="#1e1e1e">
       <Container
         w={{ base: "100%", md: "container.sm" }}
         h="100%"

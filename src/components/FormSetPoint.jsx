@@ -98,14 +98,15 @@ const FormSetPoint = ({ onPreviousPage }) => {
           </HStack>
           <Button
             w={"full"}
-            mt={6}
+            mt={8}
             colorScheme="teal"
             isLoading={props.isSubmitting}
             type="submit"
           >
-            Create Game
+            Create New Game
           </Button>
           <Button
+            ml={-3}
             mt={20}
             colorScheme="teal"
             variant="ghost"

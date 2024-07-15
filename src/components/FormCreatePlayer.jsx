@@ -18,6 +18,7 @@ import {
 import { Form, Formik, FieldArray } from "formik";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { getViewPortHeight } from "../utils/utils";
 
 const FormCreatePlayer = ({ onNextPage }) => {
   const navigate = useNavigate();
@@ -79,7 +80,7 @@ const FormCreatePlayer = ({ onNextPage }) => {
                         placeholder={`Masukkan Nama Player ${index + 1}`}
                         border="1px"
                         borderColor="teal"
-                        size="lg"
+                        size={getViewPortHeight() < 770 ? "sm" : "lg"}
                       />
                       <InputRightElement width="55px" height="100%">
                         <IconButton
@@ -112,12 +113,13 @@ const FormCreatePlayer = ({ onNextPage }) => {
                   {isMaxPlayers(values) ? "Already Max Player" : "Add Player"}
                 </Button>
                 <Stack
-                  mt={20}
+                  mt={16}
                   w={"100%"}
                   direction={"row"}
                   justifyContent={"space-between"}
                 >
                   <Button
+                    ml={-3}
                     size={"md"}
                     colorScheme="teal"
                     variant={"ghost"}
@@ -127,6 +129,7 @@ const FormCreatePlayer = ({ onNextPage }) => {
                     Home
                   </Button>
                   <Button
+                    mr={-3}
                     size={"md"}
                     colorScheme="teal"
                     type="submit"

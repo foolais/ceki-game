@@ -12,7 +12,7 @@ const CreatePage = () => {
       {/* how to add if by type here */}
       {type === "player" ? (
         <>
-          <Heading as={"h2"} size="2xl" mb={8} textAlign="center">
+          <Heading as={"h2"} size="2xl" mb={4} mt={10} textAlign="center">
             Set Player
           </Heading>
           <FormCreatePlayer onNextPage={() => setType("score")} />
