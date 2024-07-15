@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 const HomePage = () => {
   return (
-    <MainLayout>
+    <MainLayout isWithNavbar={false}>
       <Heading as="h1" size="3xl" textAlign="center">
         CEKI Game
       </Heading>

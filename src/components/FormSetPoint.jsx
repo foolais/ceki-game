@@ -87,7 +87,7 @@ const FormSetPoint = ({ onPreviousPage }) => {
           </HStack>
           <Button
             w={"full"}
-            mt={8}
+            mt={6}
             colorScheme="teal"
             isLoading={props.isSubmitting}
             type="submit"

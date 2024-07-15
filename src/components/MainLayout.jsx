@@ -1,7 +1,8 @@
 /* eslint-disable react/prop-types */
 import { Container, Box } from "@chakra-ui/react";
+import Navbar from "./Navbar";
 
-const MainLayout = ({ children }) => {
+const MainLayout = ({ children, isWithNavbar = true }) => {
   return (
     <Box w="100vw" h={{ base: "90vh", sm: "100vh" }} bg="#1e1e1e">
       <Container
@@ -14,7 +15,9 @@ const MainLayout = ({ children }) => {
         alignItems="center"
         justifyContent="center"
         gap={4}
+        pos={"relative"}
       >
+        {isWithNavbar && <Navbar />}
         <Box w="100%" p={4} color="teal">
           {children}
         </Box>

@@ -96,7 +96,7 @@ const FormCreatePlayer = ({ onNextPage }) => {
                 ))}
                 <Button
                   w={"100%"}
-                  mt={4}
+                  mt={6}
                   colorScheme="teal"
                   onClick={() =>
                     push({
