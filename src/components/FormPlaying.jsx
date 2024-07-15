@@ -9,16 +9,15 @@ import {
   Text,
   Button,
   AlertDialog,
-  AlertDialogBody,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
-  AlertDialogCloseButton,
   useDisclosure,
 } from "@chakra-ui/react";
 import { StarIcon, EditIcon } from "@chakra-ui/icons";
 import { useRef } from "react";
+import ModalEditScore from "./ModalEditScore";
 
 const FormPlaying = () => {
   const { players, totalPoint } = JSON.parse(localStorage.getItem("cekiGame"));
@@ -27,7 +26,9 @@ const FormPlaying = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef();
 
+  const [modalType, setModalType] = useState("");
   const [playersData, setPlayersData] = useState(players);
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
 
   const handleResetGame = () => {
     const updatedPlayers = playersData.map((player) => ({
@@ -43,6 +44,35 @@ const FormPlaying = () => {
     );
 
     onClose();
+  };
+
+  const handleUpdatePlayer = (updatedPlayer) => {
+    const updatedPlayers = playersData.map((player) => {
+      if (
+        player.name === updatedPlayer.name &&
+        player.id === updatedPlayer.id
+      ) {
+        return {
+          ...updatedPlayer,
+          score: +updatedPlayer.score,
+          historyScore: [...player.historyScore, +updatedPlayer.score],
+        };
+      }
+
+      return player;
+    });
+
+    setPlayersData(updatedPlayers);
+    localStorage.setItem(
+      "cekiGame",
+      JSON.stringify({ players: updatedPlayers, totalPoint })
+    );
+  };
+
+  const handleOpenModal = (type, player = {}) => {
+    if (type === "editScore") setSelectedPlayer(player);
+    setModalType(type);
+    onOpen();
   };
 
   return (
@@ -77,10 +107,11 @@ const FormPlaying = () => {
               variant={"outline"}
               colorScheme={"teal"}
               _hover={{ bg: "teal.300" }}
-              mr={4}
               w={"140px"}
               h={"50px"}
+              cursor={"pointer"}
               justifyContent={"space-between"}
+              onClick={() => handleOpenModal("editScore", player)}
             >
               <TagLabel>{player.score}</TagLabel>
               <TagRightIcon boxSize="20px" as={EditIcon} />
@@ -93,12 +124,12 @@ const FormPlaying = () => {
         w={"100%"}
         colorScheme="red"
         variant={"outline"}
-        onClick={onOpen}
+        onClick={() => handleOpenModal("reset")}
       >
         Reset Game
       </Button>
       <AlertDialog
-        isOpen={isOpen}
+        isOpen={isOpen && modalType === "reset"}
         leastDestructiveRef={cancelRef}
         onClose={onClose}
         isCentered
@@ -124,6 +155,12 @@ const FormPlaying = () => {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
+      <ModalEditScore
+        isOpen={isOpen && modalType === "editScore"}
+        onClose={onClose}
+        onConfirm={handleUpdatePlayer}
+        player={selectedPlayer}
+      />
     </Box>
   );
 };
