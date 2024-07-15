@@ -6,7 +6,13 @@ const Navbar = () => {
   return (
     <Flex pos={"absolute"} top={0} right={0} left={0} p={4}>
       <Link to="/">
-        <Tag size="lg" variant={"solid"} colorScheme={"teal"} mr={4}>
+        <Tag
+          size="lg"
+          variant={"solid"}
+          colorScheme={"teal"}
+          _hover={{ bg: "teal.300" }}
+          mr={4}
+        >
           <TagLeftIcon boxSize="12px" as={MoonIcon} />
           <TagLabel>CekIGm</TagLabel>
         </Tag>

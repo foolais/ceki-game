@@ -5,10 +5,12 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HomePage from "./pages/HomePage.jsx";
 import CreatePage from "./pages/CreatePage.jsx";
+import PlayingPage from "./pages/PlayingPage.jsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
   { path: "/create", element: <CreatePage /> },
+  { path: "/playing", element: <PlayingPage /> },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(

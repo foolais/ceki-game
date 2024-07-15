@@ -2,9 +2,12 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import MainLayout from "../components/MainLayout";
 import cardGame from "../assets/cardGame.lottie";
 import { Heading, Box, Button, Stack } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
+  const navigate = useNavigate();
+  const isPlaying = JSON.parse(localStorage.getItem("isPlayingCeki"));
+
   return (
     <MainLayout isWithNavbar={false}>
       <Heading as="h1" size="3xl" textAlign="center">
@@ -30,14 +33,25 @@ const HomePage = () => {
         />
       </Box>
       <Stack direction="column" align="center" spacing={4} mt={6}>
-        <Link to="/create">
-          <Button size="md" colorScheme="teal" w="250px">
-            Create New Game
-          </Button>
-        </Link>
-        <Button size="md" colorScheme="teal" variant="outline" w="250px">
-          Load Game
+        <Button
+          size="md"
+          colorScheme="teal"
+          w="250px"
+          onClick={() => navigate("/create")}
+        >
+          Create New Game
         </Button>
+        {isPlaying && (
+          <Button
+            size="md"
+            colorScheme="teal"
+            variant="outline"
+            w="250px"
+            onClick={() => navigate("/playing")}
+          >
+            Load Game
+          </Button>
+        )}
       </Stack>
     </MainLayout>
   );

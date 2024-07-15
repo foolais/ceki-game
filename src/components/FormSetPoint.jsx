@@ -14,8 +14,10 @@ import {
 } from "@chakra-ui/react";
 import { ChevronLeftIcon, BellIcon } from "@chakra-ui/icons";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const FormSetPoint = ({ onPreviousPage }) => {
+  const navigate = useNavigate();
   const [totalPoint, setTotalPoint] = useState({ point: 0 });
 
   useEffect(() => {
@@ -40,9 +42,18 @@ const FormSetPoint = ({ onPreviousPage }) => {
   };
 
   const handleSubmit = (values, actions) => {
-    const { point } = values;
-    localStorage.setItem("point", point);
-    actions.setSubmitting(false);
+    setTimeout(() => {
+      const { point } = values;
+      localStorage.setItem("point", point);
+      localStorage.setItem("isPlayingCeki", true);
+      const payload = {
+        players: JSON.parse(localStorage.getItem("players")),
+        totalPoint: point,
+      };
+      localStorage.setItem("cekiGame", JSON.stringify(payload));
+      actions.setSubmitting(false);
+      navigate("/playing");
+    }, 1500);
   };
 
   return (
