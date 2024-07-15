@@ -105,8 +105,8 @@ const FormPlaying = () => {
             <Tag
               size={"lg"}
               variant={"outline"}
-              colorScheme={"teal"}
-              _hover={{ bg: "teal.300" }}
+              colorScheme={player?.score < 0 ? "red" : "green"}
+              _hover={{ bg: player?.score < 0 ? "red.300" : "green.300" }}
               w={"140px"}
               h={"50px"}
               cursor={"pointer"}
