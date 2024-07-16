@@ -14,69 +14,160 @@ import {
   AlertDialogContent,
   AlertDialogOverlay,
   useDisclosure,
+  useToast,
+  keyframes,
 } from "@chakra-ui/react";
 import { StarIcon, EditIcon } from "@chakra-ui/icons";
 import { useRef } from "react";
 import ModalEditScore from "./ModalEditScore";
+import { useEffect } from "react";
 
 const FormPlaying = () => {
   const { players, totalPoint } = JSON.parse(localStorage.getItem("cekiGame"));
   const colors = ["purple", "blue", "green", "yellow", "orange"];
 
+  const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef();
 
   const [modalType, setModalType] = useState("");
   const [playersData, setPlayersData] = useState(players);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [gameWinner, setGameWinner] = useState({ status: false, name: "" });
+
+  useEffect(() => {
+    const filteredPlayer = playersData.filter(
+      (player) => player.score >= totalPoint
+    );
+    if (filteredPlayer.length > 0) {
+      setGameWinner({
+        status: true,
+        name: filteredPlayer[0].name,
+        id: filteredPlayer[0].id,
+      });
+    } else {
+      setGameWinner({ status: false, name: "", id: null });
+    }
+  }, [playersData, totalPoint]);
 
   const handleResetGame = () => {
-    const updatedPlayers = playersData.map((player) => ({
-      ...player,
-      score: 0,
-      historyScore: [0],
-    }));
+    try {
+      const updatedPlayers = playersData.map((player) => ({
+        ...player,
+        score: 0,
+        historyScore: [0],
+      }));
 
-    setPlayersData(updatedPlayers);
-    localStorage.setItem(
-      "cekiGame",
-      JSON.stringify({ players: updatedPlayers, totalPoint })
-    );
+      setPlayersData(updatedPlayers);
+      localStorage.setItem(
+        "cekiGame",
+        JSON.stringify({ players: updatedPlayers, totalPoint })
+      );
 
-    onClose();
+      onClose();
+
+      toast({
+        title: "Success",
+        description: "Game reset successfully",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
   };
 
   const handleUpdatePlayer = (updatedPlayer) => {
-    const updatedPlayers = playersData.map((player) => {
-      if (
-        player.name === updatedPlayer.name &&
-        player.id === updatedPlayer.id
-      ) {
-        return {
-          ...updatedPlayer,
-          score: +updatedPlayer.score,
-          historyScore: [...player.historyScore, +updatedPlayer.score],
-        };
-      }
+    try {
+      const updatedPlayers = playersData.map((player) => {
+        if (
+          player.name === updatedPlayer.name &&
+          player.id === updatedPlayer.id
+        ) {
+          return {
+            ...updatedPlayer,
+            score: +updatedPlayer.score,
+            historyScore: [...player.historyScore, +updatedPlayer.score],
+          };
+        }
 
-      return player;
-    });
+        return player;
+      });
 
-    setPlayersData(updatedPlayers);
-    localStorage.setItem(
-      "cekiGame",
-      JSON.stringify({ players: updatedPlayers, totalPoint })
-    );
+      setPlayersData(updatedPlayers);
+      localStorage.setItem(
+        "cekiGame",
+        JSON.stringify({ players: updatedPlayers, totalPoint })
+      );
+      toast({
+        title: "Success",
+        description: `${updatedPlayer.name} Score updated successfully`,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
   };
 
   const handleOpenModal = (type, player = {}) => {
-    if (type === "editScore") setSelectedPlayer(player);
+    if (type === "editScore") {
+      if (gameWinner?.status) {
+        toast({
+          title: "Game Has Ended",
+          description: `${gameWinner?.name} is winner`,
+          status: "success",
+          duration: 2000,
+          isClosable: true,
+        });
+        return;
+      }
+      setSelectedPlayer(player);
+    }
     setModalType(type);
     onOpen();
   };
 
+  const fadeInOut = keyframes`
+    0% { opacity: 0; } 50% {opacity: 1; } 100% { opacity: 0; }`;
+
+  const isWinner = (player) => {
+    return (
+      gameWinner?.id === player?.id &&
+      gameWinner?.name === player?.name &&
+      gameWinner?.status
+    );
+  };
+
   return (
     <Box p={4}>
+      {gameWinner?.status && (
+        <Text
+          fontSize={"lg"}
+          fontWeight={"semibold"}
+          animation={`${fadeInOut} 1.25s infinite alternate`}
+        >
+          Ceki{" "}
+          <Text as={"span"} textDecoration={"line-through"}>
+            Chiken
+          </Text>{" "}
+          Winner is {gameWinner?.name}
+        </Text>
+      )}
       <Flex w={"100%"} justify={"flex-end"} mb={4}>
         <Text fontSize={"2xl"} fontWeight={"semibold"}>
           Total Point : {totalPoint}
@@ -104,7 +195,10 @@ const FormPlaying = () => {
             </Tag>
             <Tag
               size={"lg"}
-              variant={"outline"}
+              variant={isWinner(player) ? "solid" : "outline"}
+              animation={
+                isWinner(player) && `${fadeInOut} 1.25s infinite alternate`
+              }
               colorScheme={player?.score < 0 ? "red" : "green"}
               _hover={{ bg: player?.score < 0 ? "red.300" : "green.300" }}
               w={"140px"}
