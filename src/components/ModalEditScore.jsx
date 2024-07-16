@@ -14,17 +14,19 @@ import {
   NumberInput,
   NumberInputField,
   Tag,
-  TagLeftIcon,
   TagLabel,
   Flex,
+  Box,
+  IconButton,
 } from "@chakra-ui/react";
-import { MinusIcon, AddIcon } from "@chakra-ui/icons";
+import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { useState, useEffect } from "react";
 
 const ModalEditScore = (props) => {
   const { isOpen, onClose, player, onConfirm } = props;
-  const [playerData, setPlayerData] = useState();
-  const [type, setType] = useState("Minus");
+  const [playerData, setPlayerData] = useState(null);
+  const [scoreCounter, setScoreCounter] = useState(0);
+  const [totalScore, setTotalScore] = useState(0);
 
   const specialEvent = [
     {
@@ -35,11 +37,11 @@ const ModalEditScore = (props) => {
     {
       name: "Reset",
       type: "Reset",
-      score: 0,
+      score: +player?.score,
     },
     {
       name: "Bomb",
-      type: "Minus",
+      type: "Bomb",
       score: 25,
     },
     {
@@ -75,32 +77,65 @@ const ModalEditScore = (props) => {
   ];
 
   useEffect(() => {
-    setPlayerData(player);
+    if (player) {
+      setPlayerData(player);
+      setTotalScore(+player?.score);
+    }
+
+    return () => {
+      setPlayerData(null);
+      setTotalScore(0);
+      setScoreCounter(0);
+    };
   }, [player]);
 
+  useEffect(() => {
+    setPlayerData((prev) => ({ ...prev, score: totalScore }));
+  }, [totalScore]);
+
   const handleSpecialEvent = (data) => {
-    console.log({ data });
-    handleChangeType(data.type);
-    if (data.type === "Plus") {
-      handleChangeScore(data.score);
-    } else if (data.type === "Minus") {
-      handleChangeScore(-data.score);
-    } else if (data.type === "Reset") {
-      setPlayerData({ ...playerData, score: 0 });
-    } else if (data.type === "Normal") {
-      setPlayerData({ ...playerData, score: data?.score });
-    } else {
-      handleChangeScore(data.score);
+    switch (data.type) {
+      case "Plus":
+        handleChangeType(data.type);
+        handleUpdateScore(+data.score);
+        break;
+      case "Minus":
+        handleChangeType(data.type);
+        handleUpdateScore(+-data.score);
+        break;
+      case "Reset":
+        handleChangeType(player?.score >= 0 ? "Minus" : "Plus");
+        setScoreCounter(
+          player?.score >= 0 ? -+player?.score : Math.abs(+player?.score)
+        );
+        setTotalScore(0);
+        break;
+      case "Normal":
+        setScoreCounter(0);
+        setTotalScore(+player?.score);
+        break;
+      case "Bomb":
+        setScoreCounter((prev) => prev - 25);
+        setTotalScore((prev) => prev - 25);
+        break;
+      default:
+        handleUpdateScore(data.score);
     }
   };
 
-  const handleChangeType = (value) => {
-    setType(value);
+  const handleChangeType = (type) => {
+    if (type === "Plus") setScoreCounter(Math.abs(scoreCounter));
+  };
+
+  const handleUpdateScore = (value) => {
+    const newScore = scoreCounter + +value;
+    setScoreCounter(newScore);
+    setTotalScore((prev) => prev + +value);
   };
 
   const handleChangeScore = (value) => {
-    const newScore = +playerData?.score + value;
-    setPlayerData({ ...playerData, score: newScore });
+    setScoreCounter(+value);
+    setTotalScore((prev) => prev + +value);
   };
 
   const handleSave = () => {
@@ -137,50 +172,44 @@ const ModalEditScore = (props) => {
                   </Tag>
                 ))}
               </Flex>
-              <FormLabel>Tipe</FormLabel>
-              <HStack mb={4}>
-                {["Minus", "Plus"].map((data) => (
-                  <Tag
-                    key={data}
-                    size={"lg"}
-                    variant={type === data ? "solid" : "outline"}
-                    colorScheme={data === "Plus" ? "green" : "red"}
-                    cursor={"pointer"}
-                    onClick={() => handleChangeType(data)}
-                  >
-                    <TagLeftIcon
-                      boxSize="12px"
-                      as={data === "Plus" ? AddIcon : MinusIcon}
-                    />
-                    <TagLabel>{data}</TagLabel>
-                  </Tag>
-                ))}
-              </HStack>
-              <FormLabel>Score</FormLabel>
+              <FormLabel>Counter Score</FormLabel>
               <HStack>
-                <Button
-                  colorScheme="red"
-                  isDisabled={+playerData?.score <= 0}
-                  onClick={() => handleChangeScore(-1)}
-                >
+                <Button colorScheme="red" onClick={() => handleUpdateScore(-1)}>
                   -
                 </Button>
                 <NumberInput
                   maxW={"150px"}
-                  value={playerData?.score}
-                  onChange={(e) =>
-                    setPlayerData({ ...playerData, score: e.target.value })
-                  }
+                  value={scoreCounter}
+                  onChange={(value) => handleChangeScore(value)}
                 >
                   <NumberInputField />
                 </NumberInput>
                 <Button
-                  onClick={() => handleChangeScore(1)}
+                  onClick={() => handleUpdateScore(1)}
                   colorScheme="green"
                 >
                   +
                 </Button>
               </HStack>
+              <Flex mt={4} gap={4} alignItems={"end"}>
+                <Box>
+                  <FormLabel>Original Score</FormLabel>
+                  <NumberInput maxW={"150px"} value={player?.score} isReadOnly>
+                    <NumberInputField />
+                  </NumberInput>
+                </Box>
+                <IconButton
+                  isRound={true}
+                  colorScheme="teal"
+                  icon={<ArrowForwardIcon />}
+                />
+                <Box>
+                  <FormLabel>Total Score</FormLabel>
+                  <NumberInput maxW={"150px"} value={totalScore} isReadOnly>
+                    <NumberInputField />
+                  </NumberInput>
+                </Box>
+              </Flex>
             </FormControl>
           </ModalBody>
           <ModalFooter mt={8}>
