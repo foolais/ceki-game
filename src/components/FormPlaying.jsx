@@ -17,10 +17,10 @@ import {
   useToast,
   keyframes,
 } from "@chakra-ui/react";
-import { StarIcon, EditIcon } from "@chakra-ui/icons";
-import { useRef } from "react";
+import { StarIcon, EditIcon, InfoIcon } from "@chakra-ui/icons";
+import { useRef, useEffect } from "react";
 import ModalEditScore from "./ModalEditScore";
-import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const FormPlaying = () => {
   const { players, totalPoint } = JSON.parse(localStorage.getItem("cekiGame"));
@@ -29,6 +29,7 @@ const FormPlaying = () => {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef();
+  const navigate = useNavigate();
 
   const [modalType, setModalType] = useState("");
   const [playersData, setPlayersData] = useState(players);
@@ -153,6 +154,11 @@ const FormPlaying = () => {
     );
   };
 
+  const handleViewHistory = (player) => {
+    const { id } = player;
+    navigate("/playing/" + id);
+  };
+
   return (
     <Box p={4}>
       {gameWinner?.status && (
@@ -189,9 +195,18 @@ const FormPlaying = () => {
               mr={4}
               w={"full"}
               h={"50px"}
+              justifyContent={"space-between"}
             >
-              <TagLeftIcon boxSize="12px" as={StarIcon} />
-              <TagLabel>{player.name}</TagLabel>
+              <Flex align={"center"} gap={1}>
+                <TagLeftIcon boxSize="16px" as={StarIcon} />
+                <TagLabel>{player.name}</TagLabel>
+              </Flex>
+              <TagRightIcon
+                boxSize="20px"
+                as={InfoIcon}
+                _hover={{ cursor: "pointer", color: "teal.300" }}
+                onClick={() => handleViewHistory(player)}
+              />
             </Tag>
             <Tag
               size={"lg"}

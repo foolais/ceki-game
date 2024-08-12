@@ -35,7 +35,7 @@ const FormCreatePlayer = ({ onNextPage }) => {
 
   useEffect(() => {
     const savedPlayers = JSON.parse(localStorage.getItem("players"));
-    if (savedPlayers && savedPlayers.length > 0) {
+    if (savedPlayers && savedPlayers?.length > 0) {
       setInitialValues({ players: savedPlayers });
     }
   }, []);
